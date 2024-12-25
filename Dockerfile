@@ -1,14 +1,12 @@
-FROM python:3.10
+FROM python:3.7
 
 EXPOSE 5000/tcp
 
 WORKDIR /app
 
-
 RUN apt-get update
 
 RUN apt-get install ffmpeg libsm6 libxext6 -y
-
 
 COPY requirements.txt .
 COPY views/ /app/views/

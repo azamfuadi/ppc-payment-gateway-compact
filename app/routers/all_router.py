@@ -1,4 +1,4 @@
-from flask import request, render_template
+from flask import request, render_template, jsonify
 from app import app
 from app.controllers import all_controller, paypay_controller, paypal_controller, paypalRestAPI_controller
 from app.controllers.all_controller import token_required
@@ -123,14 +123,33 @@ def checkouts(transaction_id, payment_method):
     return paypal_controller.paypal_checkout(transaction_id, payment_method)
 
 
-@app.route("/cancel/")
-def cancel():
-    #body =("ポイント追加をキャンセルします。5秒後PaperCut ユーザインタフェースへ移動します。")
-    #body =("5秒後PaperCut ユーザインタフェースへ移動します。")
-    redirect_url = all_controller.getRedirect()
+@app.route("/settings-page/")
+def settingPage():
+    papercut_config = all_controller.getPaperCutDefaultConfig()
+    payment_config = all_controller.getPaperCutPaymentConfig()
+    message = ''
+    return render_template("settings/setting.html", paymentConfig=payment_config, papercutConfig = papercut_config, message=message)
 
-    return render_template("cancel.html", mssg="5秒後PaperCut ユーザインタフェースへ移動します。"), 200, {("Refresh", "5; url={}".format(redirect_url))}
+@app.route('/api/update-papercut-settings', methods=["POST"])
+def updatePaperCutSettings():
+  if len(request.form) > 0:
+    primary_server =  request.form["primary_server"]
+    auth_token = request.form["auth_token"]
+    response = all_controller.setPaperCutDefaultConfig(primary_server, auth_token)
+    payment_config = all_controller.getPaperCutPaymentConfig()
+    papercut_config = all_controller.getPaperCutDefaultConfig()
+    message = response['message']
+    return render_template("settings/setting.html", paymentConfig=payment_config, papercutConfig = papercut_config, message=message)
+  
+@app.route('/api/get-papercut-settings', methods=["GET"])
+def getPaperCutSettings():
+  papercut_config = all_controller.getPaperCutDefaultConfig()
+  return jsonify(papercut_config), 200
 
+@app.route('/api/get-papercut-payment-settings', methods=["GET"])
+def getPaperCutPaymentSettings():
+  papercut_config = all_controller.getPaperCutPaymentConfig()
+  return jsonify(papercut_config), 200
 
 @app.route('/testmail/<transaction_id>', methods=['GET'])
 def testemail(transaction_id):

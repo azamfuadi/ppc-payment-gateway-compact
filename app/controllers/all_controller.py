@@ -13,6 +13,7 @@ from functools import wraps
 import os
 from werkzeug.utils import secure_filename
 from threading import Thread
+import requests
 
 from flask_mail import Message
 import pdfkit
@@ -256,25 +257,70 @@ def getUserTransactionListDetailed(user):
 def getPaperCutPaymentConfig():
     adminSetting = session.query(credentials).first()
     proxy = makeProxy(adminSetting.Primary_Server_Address)
-    webCashierMethod = proxy.api.getConfigValue(adminSetting.auth, "web-cashier.payment-methods")
-    paypayAPIKey = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.api-key")
-    paypayAPISecret = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.api-secret")
-    paypayMerchantId = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.merchant-id")
+    yenPointRatio = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.yen-point-ratio")
+    maximumPurchase = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.maximum-purchase")
+    minimumPurchase = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.minimum-purchase")
+    paypayEnabled = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.enabled")
     paymentRelatedConfigs = {
-        'webCashierMethod': webCashierMethod,
-        'paypayAPIKey': paypayAPIKey,
-        'paypayAPISecret': paypayAPISecret,
-        'paypayMerchantId': paypayMerchantId,
+        'yenPointRatio': int(yenPointRatio),
+        'maximumPurchase': int(maximumPurchase),
+        'minimumPurchase': int(minimumPurchase),
+        'paypayEnabled': paypayEnabled
 
     }
     
-    response = {
-        'code': '001',
-        'paymentRelatedConfig': paymentRelatedConfigs
+    return paymentRelatedConfigs
+
+def getPayPayPaymentConfig():
+    adminSetting = session.query(credentials).first()
+    proxy = makeProxy(adminSetting.Primary_Server_Address)
+    paypayAPIKey = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.api-key")
+    paypayAPISecret = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.api-secret")
+    paypayMerchantId = proxy.api.getConfigValue(adminSetting.auth, "payment-gateway.integration.paypay.merchant-id")
+    paypayRelatedConfigs = {
+        'paypayAPIKey': paypayAPIKey,
+        'paypayAPISecret': paypayAPISecret,
+        'paypayMerchantId': paypayMerchantId,
     }
-    session.close()
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    
+    return paypayRelatedConfigs
+
+def getPaperCutDefaultConfig():
+    paperCutServer = app.config['PAPERCUT_SERVER']
+    paperCutAuthToken = app.config['PAPERCUT_AUTH_TOKEN']
+    paperCutDefaultConfigs = {
+        'paperCutServer': paperCutServer,
+        'paperCutAuthToken': paperCutAuthToken,
+    }
+    
+    return paperCutDefaultConfigs
+    
+
+def setPaperCutDefaultConfig(primary_server, auth_token):
+    try:
+        response = requests.options(primary_server)
+        if response.ok:   # alternatively you can use response.status_code == 200
+            print("Success - API is accessible.")
+        else:
+            print(f"Failure - API is accessible but sth is not right. Response code : {response.status_code}")
+    except :
+        return {'message': 'Cannot connect to PaperCut Primary Server', 'code': '01'}
+    
+    try:
+        proxy = makeProxy(primary_server)
+        listUsers = proxy.api.listUserAccounts(auth_token, 0, 10)
+    except:
+        return {'message': 'Connected to PaperCut Primary Server, but wrong Auth Token', 'code': '02'}
+    
+    app.config.update(
+        PAPERCUT_SERVER=primary_server,
+        PAPERCUT_AUTH_TOKEN=auth_token
+    )
+    response = {
+        # 'totalPurchase': totalPurchase,
+        'message': 'Success updating PaperCut Default Configuration',
+        'code': '00'
+    }
     return response
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])

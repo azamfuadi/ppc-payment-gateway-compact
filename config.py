@@ -19,3 +19,5 @@ class Config(object):
     MAIL_USERNAME = 'cosy-container@cosy-kobe.sakura.ne.jp'  # enter your email here
     MAIL_DEFAULT_SENDER = 'cosy-container@cosy-kobe.sakura.ne.jp'  # enter your email here
     MAIL_PASSWORD = 'cosycube0806'  # enter your password here
+    PAPERCUT_SERVER = ''
+    PAPERCUT_AUTH_TOKEN = ''
