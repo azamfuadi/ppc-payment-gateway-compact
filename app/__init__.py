@@ -30,10 +30,10 @@ class CustomJSONEncoder(JSONEncoder):
 
 # insert db credential here
 # url = 'mysql+mysqlconnector://dbmasteruser:>0&b0z02rsN-~M[Gny3YM=YBzkcUgMM7@ls-912c29a641fcdb7c731eec956e4b36c8c1a643aa.c6vcr3vpaybq.ap-northeast-1.rds.amazonaws.com/PaymentGateway'
-url = 'mysql+mysqlconnector://root:@127.0.0.1/ppc_payment'
-Base = declarative_base()
-engine = db.create_engine(url, echo=True, pool_size=100, max_overflow=20)
-session = flask_scoped_session(sessionmaker(bind=engine))
+# url = 'mysql+mysqlconnector://root:@127.0.0.1/ppc_payment'
+# Base = declarative_base()
+# engine = db.create_engine(url, echo=True, pool_size=100, max_overflow=20)
+# session = flask_scoped_session(sessionmaker(bind=engine))
 app = Flask(__name__)
 app.secret_key = "key"
 app.config.from_object(Config)
@@ -47,7 +47,7 @@ db = SQLAlchemy(app)
 db.init_app(app)
 
 from app.routers.all_router import *
-from app.routers.user_router import *
+# from app.routers.user_router import *
 
 app.register_blueprint(allroute_blueprint)
-app.register_blueprint(users_blueprint)
+# app.register_blueprint(users_blueprint)

@@ -15,13 +15,14 @@
   <title>Payment System Configuration</title>
 
   <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.css') }}"/>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.css') }}" />
 
   <!-- fonts style -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700|Roboto:400,700&display=swap"
+    rel="stylesheet" />
 
   <!-- Custom styles for this template -->
-  <link  href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" />
   <!-- responsive style -->
   <link href="{{ url_for('static',filename='css/responsive.css') }}" rel="stylesheet" />
 </head>
@@ -39,8 +40,8 @@
             </span>
           </a>
           <a style="margin-left: auto;" href="" class="button">
-              Back to PaperCut
-            </a>
+            Back to PaperCut
+          </a>
         </nav>
       </div>
     </header>
@@ -55,42 +56,46 @@
   <section class="contact_section">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3">
+        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3 mr-3">
           <h2 class="custom_heading">PaperCut Connection Configuration</h2>
           <form action="/api/update-papercut-settings" method="post">
             {% if message != '' %}
             {% if "Success" in message %}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+              {{message}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
             {% else %}
             <div class="alert alert-danger alert alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            {%endif%}
-            {%endif%}
-            <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">PaperCut Server</label>
-                <input required name="primary_server" type="text" class="form-control" id="formGroupExampleInput" placeholder="Enter the correct PaperCut Primary Server" value="{{papercutConfig.paperCutServer}}">
-            </div>
-            <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">PaperCut Auth Token</label>
-                <div class="input-group mb-3">
-                    <input required name="auth_token" id="ppc-token" class="form-control" type="password" placeholder="Enter the correct PaperCut Auth Token"  value="{{papercutConfig.paperCutAuthToken}}" aria-describedby="button-addon2"/>
-                    <button class="btn btn-secondary" type="button" id="button-addon2"id="preview-ppc-token" onclick="displayPaperCutToken()">Preview</button>
-                </div>
-            <div>
-            <div class="d-flex  mt-4 ">
-              <button class="btn btn-primary">
-                Update PaperCut Connection Settings
+              {{message}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
               </button>
             </div>
+            {%endif%}
+            {%endif%}
+            <div class="form-group mb-3">
+              <label for="formGroupExampleInput" class="form-label">PaperCut Server</label>
+              <input required name="primary_server" type="text" class="form-control" id="formGroupExampleInput"
+                placeholder="Enter the correct PaperCut Primary Server" value="{{papercutConfig.paperCutServer}}">
+            </div>
+            <div class="form-group mb-3">
+              <label for="formGroupExampleInput" class="form-label">PaperCut Auth Token</label>
+              <div class="input-group mb-3">
+                <input required name="auth_token" id="ppc-token" class="form-control" type="password"
+                  placeholder="Enter the correct PaperCut Auth Token" value="{{papercutConfig.paperCutAuthToken}}"
+                  aria-describedby="button-addon2" />
+                <button class="btn btn-secondary" type="button" id="button-addon2" id="preview-ppc-token"
+                  onclick="displayPaperCutToken()">Preview</button>
+              </div>
+              <div>
+                <div class="d-flex  mt-4 ">
+                  <button class="btn btn-primary">
+                    Update PaperCut Connection Settings
+                  </button>
+                </div>
           </form>
         </div>
       </div>
@@ -106,45 +111,50 @@
           <h2 class="custom_heading">Transaction Configuration</h2>
           <form action="#">
             <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">Yen to Points Ratio</label>
-                <div class="row">
-                    <div class="col">
-                      <input name="yen_to_point" type="number" class="form-control" placeholder="First name" aria-label="First name" value="{{paymentConfig.yenPointRatio}}">
-                    </div>
-                    <div class="col">
-                      <input name="yent_to_point_simulation" disabled type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} Points">
-                    </div>
+              <label for="formGroupExampleInput" class="form-label">Yen to Points Ratio</label>
+              <div class="row">
+                <div class="col">
+                  <input name="yen_to_point" type="number" class="form-control" placeholder="First name"
+                    aria-label="First name" value="{{paymentConfig.yenPointRatio}}">
                 </div>
+                <div class="col">
+                  <input name="yent_to_point_simulation" disabled type="text" class="form-control"
+                    placeholder="Last name" aria-label="Last name"
+                    value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} Points">
+                </div>
+              </div>
             </div>
             <div class="mb-3">
-            <div class="row">
+              <div class="row">
                 <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">Minimum Point Purchase (￥)</label>
-                  <input name="minimum_purchase" type="number" class="form-control" placeholder="First name" aria-label="First name" value="{{paymentConfig.minimumPurchase}}">
+                  <label for="formGroupExampleInput" class="form-label">Minimum Point Purchase (￥)</label>
+                  <input name="minimum_purchase" type="number" class="form-control" placeholder="First name"
+                    aria-label="First name" value="{{paymentConfig.minimumPurchase}}">
                 </div>
                 <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">Maximum Point Purchase (￥)</label>
-                  <input name="maximum_purchase" type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.maximumPurchase}}">
+                  <label for="formGroupExampleInput" class="form-label">Maximum Point Purchase (￥)</label>
+                  <input name="maximum_purchase" type="text" class="form-control" placeholder="Last name"
+                    aria-label="Last name" value="{{paymentConfig.maximumPurchase}}">
                 </div>
+              </div>
             </div>
-        </div>
-        <div class="mb-3">
-            <div class="form-check form-switch">
+            <div class="mb-3">
+              <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                 <label class="form-check-label" for="flexSwitchCheckDefault">Enable Top-Up using PayPay</label>
               </div>
-        </div>
+            </div>
             <div class="d-flex  mt-4 ">
-                <button class="btn btn-primary">
-                    Update Payment Transaction Settings
-                </button>
+              <button class="btn btn-primary">
+                Update Payment Transaction Settings
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
   </section>
-  {% endif %}   
+  {% endif %}
 
   <!-- end contact section -->
 
@@ -192,11 +202,11 @@
   </footer>
   <!-- footer section -->
 
-  <script src= "{{ url_for('static',filename='js/jquery-3.4.1.min.js') }}"></script>
-  <script src= "{{ url_for('static',filename='js/bootstrap.js') }}"></script>
-  <script src= "{{ url_for('static',filename='js/circles.min.js') }}"></script>
-  <script src= "{{ url_for('static',filename='js/custom.js') }}" ></script>
-  <script src= "{{ url_for('static',filename='js/settingpage/settingpage.js') }}" ></script>
+  <script src="{{ url_for('static',filename='js/jquery-3.4.1.min.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/bootstrap.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/circles.min.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/custom.js') }}"></script>
+  <script src="{{ url_for('static',filename='js/settingpage/settingpage.js') }}"></script>
 
 </body>
 

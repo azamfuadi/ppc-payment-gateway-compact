@@ -1,6 +1,6 @@
 from flask import request, render_template, jsonify
 from app import app
-from app.controllers import all_controller, paypay_controller, paypal_controller, paypalRestAPI_controller
+from app.controllers import all_controller, paypay_controller
 from app.controllers.all_controller import token_required
 from flask import request, Blueprint
 
@@ -100,33 +100,36 @@ def check(merch_id, lang):
     return paypay_controller.paypayCheck(merch_id, lang)
 
 
-@app.route('/btclient', methods=['GET'])
-def getBTClientToken():
-    return paypal_controller.generate_client_token()
+# @app.route('/btclient', methods=['GET'])
+# def getBTClientToken():
+#     return paypal_controller.generate_client_token()
 
 
-@app.route('/paypal/', methods=['GET', 'POST'])
-def paypal():
-    # req = request.json
-    # amount = req['amount']
-    # user = req['user']
-    # nonce_from_the_client = req["payment_method_nonce"]
-    amount = request.form["amount"]
-    user = request.form["user"]
-    method = request.form["method"]
-    nonce_from_the_client = request.form["payment_method_nonce"]
-    return paypal_controller.paymentPayPal(str(amount), user, method, nonce_from_the_client)
+# @app.route('/paypal/', methods=['GET', 'POST'])
+# def paypal():
+#     # req = request.json
+#     # amount = req['amount']
+#     # user = req['user']
+#     # nonce_from_the_client = req["payment_method_nonce"]
+#     amount = request.form["amount"]
+#     user = request.form["user"]
+#     method = request.form["method"]
+#     nonce_from_the_client = request.form["payment_method_nonce"]
+#     return paypal_controller.paymentPayPal(str(amount), user, method, nonce_from_the_client)
 
 
-@app.route('/checkouts/<transaction_id>/<payment_method>', methods=['GET'])
-def checkouts(transaction_id, payment_method):
-    return paypal_controller.paypal_checkout(transaction_id, payment_method)
+# @app.route('/checkouts/<transaction_id>/<payment_method>', methods=['GET'])
+# def checkouts(transaction_id, payment_method):
+#     return paypal_controller.paypal_checkout(transaction_id, payment_method)
 
 
 @app.route("/settings-page/")
 def settingPage():
     papercut_config = all_controller.getPaperCutDefaultConfig()
-    payment_config = all_controller.getPaperCutPaymentConfig()
+    if app.config['PAPERCUT_SERVER'] != '':
+        payment_config = all_controller.getPaperCutPaymentConfig()
+    else :
+        payment_config = {}
     message = ''
     return render_template("settings/setting.html", paymentConfig=payment_config, papercutConfig = papercut_config, message=message)
 
@@ -151,9 +154,9 @@ def getPaperCutPaymentSettings():
   papercut_config = all_controller.getPaperCutPaymentConfig()
   return jsonify(papercut_config), 200
 
-@app.route('/testmail/<transaction_id>', methods=['GET'])
-def testemail(transaction_id):
-    return paypal_controller.emailTest(transaction_id)
+# @app.route('/testmail/<transaction_id>', methods=['GET'])
+# def testemail(transaction_id):
+#     return paypal_controller.emailTest(transaction_id)
 
 
 @app.route('/invoicedownload/<transaction_id>/<lang>', methods=['GET'])
@@ -161,25 +164,25 @@ def invoiceDownload(transaction_id, lang):
     return all_controller.generateInvoice(transaction_id, lang)
 
 
-@app.route('/paypalv2', methods=['GET', 'POST'])
-def paypalv2():
-    req = request.json
-    amount = req['amount']
-    user = req['user']
-    method = req['method']
-    lang = req['lang']
-    return paypalRestAPI_controller.create_order(amount, user, method, lang)
+# @app.route('/paypalv2', methods=['GET', 'POST'])
+# def paypalv2():
+#     req = request.json
+#     amount = req['amount']
+#     user = req['user']
+#     method = req['method']
+#     lang = req['lang']
+#     return paypalRestAPI_controller.create_order(amount, user, method, lang)
 
 
-@app.route('/paypalv2_token', methods=['GET', 'POST'])
-def paypalv2_token():
-    return paypalRestAPI_controller.generate_access_token()
+# @app.route('/paypalv2_token', methods=['GET', 'POST'])
+# def paypalv2_token():
+#     return paypalRestAPI_controller.generate_access_token()
 
 
-@app.route('/paypalv2_check/', methods=['GET', 'POST'])
-def paypalv2_check():
-    token = request.args.get('token')
-    return paypalRestAPI_controller.checkPayPal_v2(token)
+# @app.route('/paypalv2_check/', methods=['GET', 'POST'])
+# def paypalv2_check():
+#     token = request.args.get('token')
+#     return paypalRestAPI_controller.checkPayPal_v2(token)
 
 @app.route('/papercut/config', methods=['GET'])
 def papercut_config():
