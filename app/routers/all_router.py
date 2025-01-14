@@ -1,4 +1,4 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, redirect
 from app import app
 from app.controllers import all_controller, paypay_controller
 from app.controllers.all_controller import token_required
@@ -10,11 +10,6 @@ allroute_blueprint = Blueprint("all_router", __name__)
 # @app.errorhandler(404)
 # def page_not_found(error):
 #     return render_template('error.html', mssg="page not found"), 404
-
-
-@app.route('/')
-def wrongUrl():
-    return("Please log into PaperCut and set top up your account from there")
 
 @app.route('/admin/setting', methods=['GET'])
 def adminSetting():
@@ -122,27 +117,18 @@ def check(merch_id, lang):
 # def checkouts(transaction_id, payment_method):
 #     return paypal_controller.paypal_checkout(transaction_id, payment_method)
 
-
-@app.route("/settings-page/")
-def settingPage():
-    papercut_config = all_controller.getPaperCutDefaultConfig()
-    if app.config['PAPERCUT_SERVER'] != '':
-        payment_config = all_controller.getPaperCutPaymentConfig()
-    else :
-        payment_config = {}
-    message = ''
-    return render_template("settings/setting.html", paymentConfig=payment_config, papercutConfig = papercut_config, message=message)
-
 @app.route('/api/update-papercut-settings', methods=["POST"])
-def updatePaperCutSettings():
+def updatePaperCutSettingsAPI():
   if len(request.form) > 0:
     primary_server =  request.form["primary_server"]
     auth_token = request.form["auth_token"]
     response = all_controller.setPaperCutDefaultConfig(primary_server, auth_token)
-    payment_config = all_controller.getPaperCutPaymentConfig()
-    papercut_config = all_controller.getPaperCutDefaultConfig()
     message = response['message']
-    return render_template("settings/setting.html", paymentConfig=payment_config, papercutConfig = papercut_config, message=message)
+    api_response = {
+        'message' : message,
+        'response': response
+    }
+    return jsonify(api_response), 200
   
 @app.route('/api/get-papercut-settings', methods=["GET"])
 def getPaperCutSettings():
@@ -153,10 +139,6 @@ def getPaperCutSettings():
 def getPaperCutPaymentSettings():
   papercut_config = all_controller.getPaperCutPaymentConfig()
   return jsonify(papercut_config), 200
-
-# @app.route('/testmail/<transaction_id>', methods=['GET'])
-# def testemail(transaction_id):
-#     return paypal_controller.emailTest(transaction_id)
 
 
 @app.route('/invoicedownload/<transaction_id>/<lang>', methods=['GET'])

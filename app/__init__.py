@@ -47,7 +47,9 @@ db = SQLAlchemy(app)
 db.init_app(app)
 
 from app.routers.all_router import *
+from app.routers.web_router import *
 # from app.routers.user_router import *
 
 app.register_blueprint(allroute_blueprint)
+app.register_blueprint(webroute_blueprint)
 # app.register_blueprint(users_blueprint)

@@ -258,10 +258,10 @@ def getPaperCutPaymentConfig():
     # adminSetting = session.query(credentials).first()
     # proxy = makeProxy(adminSetting.Primary_Server_Address)
     proxy = makeProxy(app.config['PAPERCUT_SERVER'])
-    yenPointRatio = proxy.api.getConfigValue(app.config(['PAPERCUT_AUTH_TOKEN']), "payment-gateway.integration.yen-point-ratio")
-    maximumPurchase = proxy.api.getConfigValue(app.config(['PAPERCUT_AUTH_TOKEN']), "payment-gateway.integration.maximum-purchase")
-    minimumPurchase = proxy.api.getConfigValue(app.config(['PAPERCUT_AUTH_TOKEN']), "payment-gateway.integration.minimum-purchase")
-    paypayEnabled = proxy.api.getConfigValue(app.config(['PAPERCUT_AUTH_TOKEN']), "payment-gateway.integration.paypay.enabled")
+    yenPointRatio = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.yen-point-ratio")
+    maximumPurchase = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.maximum-purchase")
+    minimumPurchase = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.minimum-purchase")
+    paypayEnabled = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.paypay.enabled")
     paymentRelatedConfigs = {
         'yenPointRatio': int(yenPointRatio),
         'maximumPurchase': int(maximumPurchase),
@@ -299,20 +299,6 @@ def getPaperCutDefaultConfig():
     
 
 def setPaperCutDefaultConfig(primary_server, auth_token):
-    try:
-        response = requests.options(primary_server)
-        if response.ok:   # alternatively you can use response.status_code == 200
-            print("Success - API is accessible.")
-        else:
-            print(f"Failure - API is accessible but sth is not right. Response code : {response.status_code}")
-    except :
-        return {'message': 'Cannot connect to PaperCut Primary Server', 'code': '01'}
-    
-    try:
-        proxy = makeProxy(primary_server)
-    except:
-        return {'message': 'Connected to PaperCut Primary Server, but wrong Auth Token', 'code': '02'}
-    
     app.config.update(
         PAPERCUT_SERVER=primary_server,
         PAPERCUT_AUTH_TOKEN=auth_token
@@ -320,9 +306,28 @@ def setPaperCutDefaultConfig(primary_server, auth_token):
     response = {
         # 'totalPurchase': totalPurchase,
         'message': 'Success updating PaperCut Default Configuration',
+        'messagejp': 'PaperCut のデフォルト設定の更新に成功しました',
         'code': '00'
     }
     return response
+
+def setPaperCutPaymentConfig(yentoPoint, minimumPurchase, maximumPurchase, paypayEnabled):
+    # adminSetting = session.query(credentials).first()
+    # proxy = makeProxy(adminSetting.Primary_Server_Address)
+    proxy = makeProxy(app.config['PAPERCUT_SERVER'])
+    proxy.api.setConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.yen-point-ratio", yentoPoint)
+    proxy.api.setConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.maximum-purchase", maximumPurchase)
+    proxy.api.setConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.minimum-purchase", minimumPurchase)
+    proxy.api.setConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.paypay.enabled", paypayEnabled)
+    response = {
+        # 'totalPurchase': totalPurchase,
+        'message': 'Success updating PaperCut Top-Up Transaction Configuration',
+        'messagejp': 'PaperCut のトップアップ取引設定の更新に成功しました',
+        'code': '00'
+    }
+    return response
+
+    
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 

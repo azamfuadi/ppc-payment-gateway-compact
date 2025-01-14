@@ -35,11 +35,11 @@
           <a class="navbar-brand" href="index.html">
             <img src="" alt="" />
             <span>
-              Payment System Configuration
+              支払いシステムの設定
             </span>
           </a>
           <a style="margin-left: auto;" href="" class="button">
-              Back to PaperCut
+              PaperCutへ戻る
             </a>
         </nav>
       </div>
@@ -55,11 +55,11 @@
   <section class="contact_section">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3">
-          <h2 class="custom_heading">PaperCut Connection Configuration</h2>
-          <form action="/api/update-papercut-settings" method="post">
+        <div class="col-12 mt-3 mb-3">
+          <h2 class="custom_heading">PaperCutへの接続設定</h2>
+          <form action="/update-papercut-settings" method="post">
             {% if message != '' %}
-            {% if "Success" in message %}
+            {% if "Success" in message or "成功" in message%}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{message}}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -75,20 +75,21 @@
             </div>
             {%endif%}
             {%endif%}
+            <input id="lang2" required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="jp" hidden>
             <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">PaperCut Server</label>
-                <input required name="primary_server" type="text" class="form-control" id="formGroupExampleInput" placeholder="Enter the correct PaperCut Primary Server" value="{{papercutConfig.paperCutServer}}">
+                <label for="formGroupExampleInput" class="form-label">PaperCut サーバー</label>
+                <input required name="primary_server" type="text" class="form-control" id="formGroupExampleInput" placeholder="正しいPaperCutプライマリサーバーを入力してください" value="{{papercutConfig.paperCutServer}}">
             </div>
             <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">PaperCut Auth Token</label>
+                <label for="formGroupExampleInput" class="form-label">PaperCut 認証トークン (Auth Token) </label>
                 <div class="input-group mb-3">
-                    <input required name="auth_token" id="ppc-token" class="form-control" type="password" placeholder="Enter the correct PaperCut Auth Token"  value="{{papercutConfig.paperCutAuthToken}}" aria-describedby="button-addon2"/>
+                    <input required name="auth_token" id="ppc-token" class="form-control" type="password" placeholder="正しいPaperCut認証トークン (Auth Token) を入力してください"  value="{{papercutConfig.paperCutAuthToken}}" aria-describedby="button-addon2"/>
                     <button class="btn btn-secondary" type="button" id="button-addon2"id="preview-ppc-token" onclick="displayPaperCutToken()">Preview</button>
                 </div>
             <div>
             <div class="d-flex  mt-4 ">
               <button class="btn btn-primary">
-                Update PaperCut Connection Settings
+                PaperCut接続設定を更新する
               </button>
             </div>
           </form>
@@ -102,41 +103,71 @@
   <section class="contact_section">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3">
-          <h2 class="custom_heading">Transaction Configuration</h2>
-          <form action="#">
+        <div class="col-12 mt-3 mb-3">
+          <h2 class="custom_heading">チャージ取引設定</h2>
+          <form action="/update-topup-settings" method="post">
+            {% if topup_message != '' %}
+            {% if "Success" in topup_message or "成功" in topup_message%}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{topup_message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% else %}
+            <div class="alert alert-danger alert alert-dismissible fade show" role="alert">
+                {{topup_message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {%endif%}
+            {%endif%}
+            <input id="lang1" required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="jp" hidden>
             <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">Yen to Points Ratio</label>
+                <label for="formGroupExampleInput" class="form-label">円からポイントへの変換</label>
                 <div class="row">
                     <div class="col">
-                      <input name="yen_to_point" type="number" class="form-control" placeholder="First name" aria-label="First name" value="{{paymentConfig.yenPointRatio}}">
+                      <input id="yen_to_point" name="yen_to_point" type="number" class="form-control" placeholder="1" aria-label="1" value="{{paymentConfig.yenPointRatio}}" onkeyup="changeConversionSimulation()" min="1">
                     </div>
                     <div class="col">
-                      <input name="yent_to_point_simulation" disabled type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} Points">
+                      <input id="yen_to_point_simulation" name="yen_to_point_simulation" disabled type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} ポイント">
                     </div>
                 </div>
             </div>
             <div class="mb-3">
             <div class="row">
                 <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">Minimum Point Purchase (￥)</label>
-                  <input name="minimum_purchase" type="number" class="form-control" placeholder="First name" aria-label="First name" value="{{paymentConfig.minimumPurchase}}">
+                    <label for="formGroupExampleInput" class="form-label">最低ポイント購入 (￥)</label>
+                  <input id="minimum_purchase" name="minimum_purchase" type="number" class="form-control" placeholder="10" aria-label="10" value="{{paymentConfig.minimumPurchase}}" onkeyup="changeConversionSimulation()" min="10">
                 </div>
                 <div class="col">
-                    <label for="formGroupExampleInput" class="form-label">Maximum Point Purchase (￥)</label>
-                  <input name="maximum_purchase" type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.maximumPurchase}}">
+                    <label for="formGroupExampleInput" class="form-label">最大ポイント購入 (￥)</label>
+                  <input id="maximum_purchase" name="maximum_purchase" type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.maximumPurchase}}">
                 </div>
             </div>
         </div>
         <div class="mb-3">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Enable Top-Up using PayPay</label>
+            <div class="row">
+              <div class="col">
+                <label class="form-check-label" for="flexSwitchCheckDefault">PayPayを使用したチャージを有効にする</label>
+                {% if paymentConfig.paypayEnabled == 'Y' %}
+                <select name="paypay_enabled" class="custom-select custom-select-sm">
+                  <option value="Y" selected>はい</option>
+                  <option value="N">いいえ</option>
+                </select>
+                {% else %}
+                <select name="paypay_enabled" class="custom-select custom-select-sm">
+                  <option value="Y">はい</option>
+                  <option value="N" selected>いいえ</option>
+                </select>
+                {% endif %}
               </div>
+            </div>
         </div>
             <div class="d-flex  mt-4 ">
                 <button class="btn btn-primary">
-                    Update Payment Transaction Settings
+                  チャージ取引設定の更新する
                 </button>
             </div>
           </form>
@@ -144,8 +175,58 @@
       </div>
     </div>
   </section>
-  {% endif %}   
+  {% endif %}
 
+  {% if paymentConfig.paypayEnabled == 'Y' %}
+  <section class="contact_section">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 mt-3 mb-3">
+          <h2 class="custom_heading">PayPayへの接続設定</h2>
+          <form action="#" method="post">
+            {% if paypay_message != '' %}
+            {% if "Success" in paypay_message or "成功" in paypay_message%}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{paypay_message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% else %}
+            <div class="alert alert-danger alert alert-dismissible fade show" role="alert">
+                {{paypay_message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {%endif%}
+            {%endif%}
+            <input id="lang3" required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="jp" hidden>
+            <div class="mb-3">
+              <label for="formGroupExampleInput" class="form-label">PayPay APIキー</label>
+              <div class="input-group mb-3">
+                  <input required name="paypay_api_key" id="paypay_api_key" class="form-control" type="password" placeholder="正しいPaperCut認証トークン (Auth Token) を入力してください"  value="{{papercutConfig.paperCutAuthToken}}" aria-describedby="button-addon2"/>
+                  <button class="btn btn-secondary" type="button" id="button-addon2"id="preview-ppc-token" onclick="displayPaperCutToken()">Preview API Key</button>
+              </div>
+          <div>
+            <div class="mb-3">
+                <label for="formGroupExampleInput" class="form-label">PayPay APIシークレット</label>
+                <div class="input-group mb-3">
+                    <input required name="paypay_api_secret" id="paypay_api_secret" class="form-control" type="password" placeholder="正しいPaperCut認証トークン (Auth Token) を入力してください"  value="{{papercutConfig.paperCutAuthToken}}" aria-describedby="button-addon2"/>
+                    <button class="btn btn-secondary" type="button" id="button-addon2"id="preview-ppc-token" onclick="displayPaperCutToken()">Preview</button>
+                </div>
+            <div>
+            <div class="d-flex  mt-4 ">
+              <button class="btn btn-primary">
+                PaperCut接続設定を更新する
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
   <!-- end contact section -->
 
   <!-- info section -->

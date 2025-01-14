@@ -56,9 +56,9 @@
   <section class="contact_section">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3 mr-3">
+        <div class="col-12 mt-3 mb-3 mr-3">
           <h2 class="custom_heading">PaperCut Connection Configuration</h2>
-          <form action="/api/update-papercut-settings" method="post">
+          <form action="/update-papercut-settings" method="post">
             {% if message != '' %}
             {% if "Success" in message %}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -76,6 +76,7 @@
             </div>
             {%endif%}
             {%endif%}
+            <input required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="en" hidden>
             <div class="form-group mb-3">
               <label for="formGroupExampleInput" class="form-label">PaperCut Server</label>
               <input required name="primary_server" type="text" class="form-control" id="formGroupExampleInput"
@@ -99,6 +100,7 @@
           </form>
         </div>
       </div>
+      <hr style="border: 0.5px solid white;">
     </div>
   </section>
 
@@ -107,15 +109,16 @@
   <section class="contact_section">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12 offset-lg-2 offset-md-1 mt-3 mb-3">
+        <div class="col-12 mt-3 mb-3">
           <h2 class="custom_heading">Transaction Configuration</h2>
-          <form action="#">
+          <form action="/update-topup-settings" method="post">
+            <input required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="en" hidden>
             <div class="mb-3">
-              <label for="formGroupExampleInput" class="form-label">Yen to Points Ratio</label>
+              <label for="formGroupExampleInput" class="form-label">Yen to Points Conversion</label>
               <div class="row">
                 <div class="col">
-                  <input name="yen_to_point" type="number" class="form-control" placeholder="First name"
-                    aria-label="First name" value="{{paymentConfig.yenPointRatio}}">
+                  <input name="yen_to_point" type="number" class="form-control" placeholder="Yen to Points Conversion"
+                    aria-label="Yen to points conversion" value="{{paymentConfig.yenPointRatio}}">
                 </div>
                 <div class="col">
                   <input name="yent_to_point_simulation" disabled type="text" class="form-control"
@@ -128,8 +131,8 @@
               <div class="row">
                 <div class="col">
                   <label for="formGroupExampleInput" class="form-label">Minimum Point Purchase (￥)</label>
-                  <input name="minimum_purchase" type="number" class="form-control" placeholder="First name"
-                    aria-label="First name" value="{{paymentConfig.minimumPurchase}}">
+                  <input name="minimum_purchase" type="number" class="form-control" placeholder="Minimum Purchase"
+                    aria-label="Minimum Purchase" value="{{paymentConfig.minimumPurchase}}">
                 </div>
                 <div class="col">
                   <label for="formGroupExampleInput" class="form-label">Maximum Point Purchase (￥)</label>
@@ -139,18 +142,31 @@
               </div>
             </div>
             <div class="mb-3">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Enable Top-Up using PayPay</label>
+              <div class="row">
+                <div class="col">
+                  <label class="form-check-label" for="flexSwitchCheckDefault">Enable Point Charge using PayPay</label>
+                  {% if paymentConfig.paypayEnabled == 'Y' %}
+                  <select name="paypay_enabled" class="custom-select custom-select-sm">
+                    <option value="Y" selected>Yes</option>
+                    <option value="N">No</option>
+                  </select>
+                  {% else %}
+                  <select name="paypay_enabled" class="custom-select custom-select-sm">
+                    <option value="Y">Yes</option>
+                    <option value="N" selected>No</option>
+                  </select>
+                  {% endif %}
+                </div>
               </div>
             </div>
             <div class="d-flex  mt-4 ">
               <button class="btn btn-primary">
-                Update Payment Transaction Settings
+                Update Top-Up Transaction Settings
               </button>
             </div>
           </form>
         </div>
+        <hr style="border: 0.5px solid white;">
       </div>
     </div>
   </section>
