@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>PayPayでポイントチャージ</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.css') }}"/>
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700|Roboto:400,700&display=swap" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link  href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="{{ url_for('static',filename='css/responsive.css') }}" rel="stylesheet" />
+</head>
+
+<body class="sub_page">
+  <div class="hero_area">
+    <!-- header section strats -->
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+          <a class="navbar-brand" href="index.html">
+            <img src="" alt="" />
+            <span>
+            PayPayでポイントチャージ
+            </span>
+          </a>
+          <a style="margin-left: auto;" href="" class="button">
+              PaperCutへ戻る
+            </a>
+        </nav>
+      </div>
+    </header>
+    <!-- end header section -->
+
+
+  </div>
+
+
+  <!-- PaperCut Connection Setting -->
+
+  <section class="contact_section">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 mt-3 mb-3">
+          {% if message != '' %}
+          {% if "Success" in message or "成功" in message%}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{message}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {% else %}
+          <div class="alert alert-danger alert alert-dismissible fade show" role="alert">
+              {{message}}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {%endif%}
+          {%endif%}
+          <h2 class="custom_heading mb-2">こんにちは、{{user}}さん</h2>
+          <h5 for="formGroupExampleInput" class="form-label">PayPayを利用したPaperCutポイントチャージページへ ようこそ！</h5>
+          <div class="alert alert-info fade show" role="alert">
+            最小金額 <strong>￥{{paymentConfig.minimumPurchase}}</strong><br>
+            最大金額 <strong>￥{{paymentConfig.maximumPurchase}}</strong>
+            </div>
+          <hr style="border: 0.5px solid white;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Payment Transaction Setting -->
+  {% if papercutConfig.paperCutServer != '' %}
+  <section class="contact_section">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12 mt-3 mb-3">
+          <div class="card mb-3">
+            <div class="card-header" style="color: black; font-size: large;">
+                ポイント追加購入
+            </div>
+            <div class="card-body">
+              <form action="/paypay-checkout?t={{token}}&lang=jp" method="post">
+                <input id="lang1" required name="lang" type="text" class="form-control" id="formGroupExampleInput"  value="jp" hidden>
+                <input id="yen_to_point_ratio" required name="yen_to_point_ratio" type="text" class="form-control" id="formGroupExampleInput"  value="{{paymentConfig.yenPointRatio}}" hidden>
+                <div class="mb-3" style="color: black;">
+                    <div class="row">
+                        <div class="col">
+                            <label for="formGroupExampleInput" class="form-label">購入金額</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text" id="basic-addon1">￥</span>
+                                </div>
+                                <input required id="desired_transaction" name="desired_transaction" type="number" class="form-control" value="{{paymentConfig.minimumPurchase}}" onkeyup="changeSummary()" min="{{paymentConfig.minimumPurchase}}">
+                              </div>
+                        </div>
+                        <div class="col">
+                            <label for="formGroupExampleInput" class="form-label">ポイント比率</label>
+                          <input id="yen_to_point_simulation" name="yen_to_point_simulation" disabled type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} ポイント">
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row d-flex mt-4 ">
+                    <div class="col-12">
+                        <strong style="color: black;">まとめ</strong>
+                        <div class="alert alert-success fade show" role="alert">
+                            <strong>合計ポイント：</strong> <span id="obtained-point">{{paymentConfig.minimumPurchase * paymentConfig.yenPointRatio}}</span><br>
+                            <strong>合計金額：￥</strong> <span id="payment-amount">{{paymentConfig.minimumPurchase}}</span>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row d-flex mt-4 ">
+                    <div class="col-2 mb-3">
+                        <strong style="color: black;">お支払</strong><br>
+                    </div>
+                    <div class="col-10 mb-3">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-secondary">PayPay</button>
+                            <!-- <button type="button" class="btn btn-secondary">Middle</button>
+                            <button type="button" class="btn btn-secondary">Right</button> -->
+                          </div>
+                    </div>
+                </div>
+                <div class="row mt-3 ">
+                    <div class="col-3" style="color: black;">
+                        <h4><strong>合計金額：</strong></h4>
+                        <h5><strong>￥</strong> <span id="total-payment" style="font-size: large;">{{paymentConfig.minimumPurchase}}</span></h5>
+                    </div>
+                    <div class="col-9">
+                        <img width="245" height="85" src="{{ url_for('static',filename='images/PayPay.png') }}" class="align-self-center mr-3" alt="...">
+                        <div class="media-body" style="color: black;">
+                          <button class="btn btn-success" type="submit">
+                            PayPay支払いページに進む
+                          </button>
+                        </div>
+                    </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+  <!-- end contact section -->
+
+  <!-- info section -->
+  <section class="info_section layout_padding-top layout_padding2-bottom">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 col-lg-3">
+          <div class="info_contact">
+            <h4>
+              Location
+            </h4>
+            <div>
+              <img src="{{ url_for('static',filename='images/location.png') }}" alt="" />
+              <p>
+                104 loram ipusm
+              </p>
+            </div>
+            <div>
+              <img src="{{ url_for('static',filename='images/telephone.png') }}" alt="" />
+              <p>
+                ( +01 1234567890 )
+              </p>
+            </div>
+            <div>
+              <img src="{{ url_for('static',filename='images/envelope.png') }}" alt="" />
+              <p>
+                demo@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- end info_section -->
+
+  <!-- footer section -->
+  <footer class="container-fluid footer_section">
+    <p>
+      &copy; 2024 All Rights Reserved By
+      <a href="https://html.design/">COSY Inc</a>
+    </p>
+  </footer>
+  <!-- footer section -->
+
+  <script src= "{{ url_for('static',filename='js/jquery-3.4.1.min.js') }}"></script>
+  <script src= "{{ url_for('static',filename='js/bootstrap.js') }}"></script>
+  <script src= "{{ url_for('static',filename='js/circles.min.js') }}"></script>
+  <script src= "{{ url_for('static',filename='js/custom.js') }}" ></script>
+  <script src= "{{ url_for('static',filename='js/topuppage/topuppage.js') }}" ></script>
+
+</body>
+
+</html>

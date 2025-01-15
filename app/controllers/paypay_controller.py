@@ -128,6 +128,97 @@ def paymentPaypay(amount, user, lang):
         response = jsonify(response)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
+    
+def redirectToPaypay(amount, user, lang):
+    # adminSetting = session.query(credentials).first()
+    # client = makeClient(adminSetting.PayPay_API_KEY,
+    #                     adminSetting.PayPay_API_SECRET, adminSetting.PayPay_MERCHANT_ID)
+    papercutPaymentConfig = getPaperCutPaymentConfig()
+    paypayPaymentConfig = getPayPayPaymentConfig()
+    client = makeClient(paypayPaymentConfig['paypayAPIKey'],
+                        paypayPaymentConfig['paypayAPISecret'], paypayPaymentConfig['paypayMerchantId'])
+    merchantPaymentId = uuid.uuid4().hex
+    print(client)
+
+    if int(amount) < int(papercutPaymentConfig['minimumPurchase']) or int(amount) > int(papercutPaymentConfig['maximumPurchase']):
+        if int(amount) < int(papercutPaymentConfig['minimumPurchase']):
+            error = "Top up amount should be more than or equal with the Minimum Purchase (" + str(
+                papercutPaymentConfig['minimumPurchase']) + ")"
+        else:
+            error = "Top up amount should be less than or equal with the Maximum Purchase (" + str(
+                papercutPaymentConfig['maximumPurchase']) + ")"
+        response = {
+            'status': 'error',
+            'message': error
+        }
+        response = jsonify(response)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+    proxy = makeProxy(app.config['PAPERCUT_SERVER'])
+    auth = app.config['PAPERCUT_AUTH_TOKEN']
+    # proxy.api.getUserAccountBalance(auth,user)
+    # print(proxy.api.getUserAccountBalance(auth,user))
+    if proxy.api.isUserExists(auth, user):
+        host_url = request.host_url
+        FRONTEND_PATH = host_url+"check"
+        qr = {
+            "merchantPaymentId": merchantPaymentId,
+            "codeType": "ORDER_QR",
+            "redirectUrl": "{}/{}/{}".format(FRONTEND_PATH, merchantPaymentId, lang),
+            "redirectType": "WEB_LINK",
+            "orderDescription": "Papercutポイントの追加購入",
+            "orderItems": [{
+                "name": (user),
+                "category": "Credit",
+                "quantity": 1,
+                "productId": "00001",
+                "unitPrice": {
+                    "amount": int(amount),
+                    "currency": "JPY"
+                }
+            }],
+            "amount": {
+                "amount": int(amount),
+                "currency": "JPY"
+            },
+        }
+
+        response = client.Code.create_qr_code(qr)
+        qrcode = (response['data']['url'])
+        response = {
+            'status': 'success',
+            'paypaylink': qrcode,
+            "merchantPaymentId": merchantPaymentId,
+            "orderDescription": "Papercutポイントの追加購入",
+            "orderItems": [{
+                "name": (user),
+                "category": "Credit",
+                "quantity": 1,
+                "productId": "00001",
+                "unitPrice": {
+                    "amount": int(amount),
+                    "currency": "JPY"
+                }
+            }],
+            "amount": {
+                "amount": int(amount),
+                "currency": "JPY"
+            },
+        }
+        # session.close()
+        # response = jsonify(response)
+        # response.headers.add('Access-Control-Allow-Origin', '*')
+        # return response
+        return redirect(qrcode)
+    else:
+        response = {
+            'status': 'user not found',
+            'message': 'User not exist in papercut',
+        }
+        # session.close()
+        response = jsonify(response)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
 
 def paypayCheck(merch_id, lang):
@@ -136,9 +227,9 @@ def paypayCheck(merch_id, lang):
     redirect_url = app.config['PAPERCUT_SERVER']+'/app?service=page/UserSummary'
     papercutPaymentConfig = getPaperCutPaymentConfig()
     paypayPaymentConfig = getPayPayPaymentConfig()
-    client = makeClient(paypayPaymentConfig.paypayAPIKey,
-                        paypayPaymentConfig.paypayAPISecret, paypayPaymentConfig.paypayMerchantId)
-    multiplier = papercutPaymentConfig.yenPointRatio
+    client = makeClient(paypayPaymentConfig['paypayAPIKey'],
+                        paypayPaymentConfig['paypayAPISecret'], paypayPaymentConfig['paypayMerchantId'])
+    multiplier = int(papercutPaymentConfig['yenPointRatio'])
     try:
         polling.poll(
             lambda: fetch_payment_status(
