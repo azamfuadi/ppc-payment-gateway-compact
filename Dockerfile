@@ -14,6 +14,7 @@ COPY __pycache__/ /app/__pycache__/
 
 RUN pip install -r requirements.txt
 
-COPY app.py .
+# COPY app.py .
+COPY . .
 
 CMD ["python3", "app.py"]
