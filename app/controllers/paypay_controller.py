@@ -229,7 +229,7 @@ def paypayCheck(merch_id, lang):
     paypayPaymentConfig = getPayPayPaymentConfig()
     client = makeClient(paypayPaymentConfig['paypayAPIKey'],
                         paypayPaymentConfig['paypayAPISecret'], paypayPaymentConfig['paypayMerchantId'])
-    multiplier = int(papercutPaymentConfig['yenPointRatio'])
+    multiplier = float(papercutPaymentConfig['yenPointRatio'])
     try:
         polling.poll(
             lambda: fetch_payment_status(

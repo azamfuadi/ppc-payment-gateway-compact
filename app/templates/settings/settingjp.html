@@ -112,7 +112,7 @@
                 <label for="formGroupExampleInput" class="form-label">円からポイントへの変換</label>
                 <div class="row">
                     <div class="col">
-                      <input required id="yen_to_point" name="yen_to_point" type="number" class="form-control" aria-label="1" value="{{paymentConfig.yenPointRatio}}" onkeyup="changeConversionSimulation()" min="1">
+                      <input required id="yen_to_point" name="yen_to_point" type="number" class="form-control" aria-label="1" value="{{paymentConfig.yenPointRatio}}" onkeyup="changeConversionSimulation()" min="0.01" step=".01">
                     </div>
                     <div class="col">
                       <input id="yen_to_point_simulation" name="yen_to_point_simulation" disabled type="text" class="form-control" placeholder="Last name" aria-label="Last name" value="{{paymentConfig.minimumPurchase}}￥ = {{paymentConfig.minimumPurchase*paymentConfig.yenPointRatio}} ポイント">

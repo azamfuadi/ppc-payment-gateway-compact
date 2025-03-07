@@ -26,7 +26,12 @@ def settingPage():
     if app.config['PAPERCUT_SERVER'] != '':
         payment_config = all_controller.getPaperCutPaymentConfig()
     else :
-        payment_config = {}
+        payment_config = {
+            'yenPointRatio': 1,
+            'maximumPurchase': 10000,
+            'minimumPurchase': 100,
+            'paypayEnabled': 'N'
+        }
     if app.config['PAPERCUT_SERVER'] != '':
         paypay_config = all_controller.getPayPayPaymentConfig()
     else :
