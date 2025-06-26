@@ -37,7 +37,7 @@ function displayPaypayMerchantId() {
 function changeConversionSimulation() {
   var minimumPurchase = document.getElementById("minimum_purchase").value;
   var yenToPoint = document.getElementById("yen_to_point").value;
-  var convertedValue = parseInt(minimumPurchase) * parseInt(yenToPoint);
+  var convertedValue = parseInt(minimumPurchase) * parseFloat(yenToPoint);
   var lang = document.getElementById("lang2").value;
   var displayedValue = "";
   if (lang == "en") {
