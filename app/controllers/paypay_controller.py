@@ -83,12 +83,12 @@ def paymentPaypay(amount, user, lang):
                 "quantity": 1,
                 "productId": "00001",
                 "unitPrice": {
-                    "amount": int(amount),
+                    "amount": float(amount),
                     "currency": "JPY"
                 }
             }],
             "amount": {
-                "amount": int(amount),
+                "amount": float(amount),
                 "currency": "JPY"
             },
         }

@@ -263,11 +263,11 @@ def getPaperCutPaymentConfig():
     minimumPurchase = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.minimum-purchase")
     paypayEnabled = proxy.api.getConfigValue(app.config['PAPERCUT_AUTH_TOKEN'], "payment-gateway.integration.paypay.enabled")
     if yenPointRatio != '':
-        yenPointRatio = int(yenPointRatio)
+        yenPointRatio = float(yenPointRatio)
     if maximumPurchase != '':
-        maximumPurchase = int(maximumPurchase)
+        maximumPurchase = float(maximumPurchase)
     if minimumPurchase != '':
-        minimumPurchase = int(minimumPurchase)
+        minimumPurchase = float(minimumPurchase)
     paymentRelatedConfigs = {
         'yenPointRatio': yenPointRatio,
         'maximumPurchase': maximumPurchase,
